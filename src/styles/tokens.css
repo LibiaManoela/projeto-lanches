@@ -1,0 +1,19 @@
+/* Tokens do guia de estilo. Uso: bg-laranja, text-marrom, ring-laranja-claro... */
+@theme {
+  /* Paleta principal */
+  --color-laranja: #e95322;
+  --color-amarelo: #f5cb58;
+  --color-amarelo-claro: #f3e9b5;
+  --color-laranja-claro: #ffdecf;
+  --color-marrom: #391713;
+  --color-branco-suave: #f8f8f8;
+
+  /* Cores auxiliares */
+  --color-amarelo-intenso: #f4ba1b;
+  --color-coral: #fa5a66;
+  --color-cinza: #676767;
+
+  /* Laranja escuro: para botões e textos laranja (branco sobre ele ≈ 5:1).
+     O laranja #E95322 puro fica para fundos grandes e elementos decorativos. */
+  --color-laranja-escuro: #c8400f;
+}
