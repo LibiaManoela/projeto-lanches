@@ -1,12 +1,38 @@
-{
-  "id": 1,
-  "name": "X-Burger da Casa",
-  "category": "lanches",
-  "price": 18.9,
-  "description": "Pão macio, hambúrguer artesanal, queijo e molho especial.",
-  "image": "/images/x-burger.jpg",
-  "ingredients": [
-    { "id": "queijo", "name": "Queijo", "removable": true, "extraPrice": 0 },
-    { "id": "bacon", "name": "Bacon", "removable": true, "extraPrice": 4 }
-  ]
-}
+[
+  { "id": 1, "name": "X-Burger da Casa", "category": "lanches", "price": 18.9, "description": "Pão macio, hambúrguer artesanal, queijo e molho especial.", "image": null,
+    "ingredients": [
+      { "id": "queijo", "name": "Queijo", "included": true, "extraPrice": 0 },
+      { "id": "alface", "name": "Alface", "included": true, "extraPrice": 0 },
+      { "id": "tomate", "name": "Tomate", "included": true, "extraPrice": 0 },
+      { "id": "bacon", "name": "Bacon", "included": false, "extraPrice": 4 },
+      { "id": "ovo", "name": "Ovo", "included": false, "extraPrice": 2.5 }
+    ] },
+  { "id": 2, "name": "X-Bacon", "category": "lanches", "price": 22.9, "description": "Hambúrguer, bacon crocante, queijo derretido e maionese da casa.", "image": null,
+    "ingredients": [
+      { "id": "bacon", "name": "Bacon", "included": true, "extraPrice": 0 },
+      { "id": "queijo", "name": "Queijo", "included": true, "extraPrice": 0 },
+      { "id": "alface", "name": "Alface", "included": true, "extraPrice": 0 },
+      { "id": "ovo", "name": "Ovo", "included": false, "extraPrice": 2.5 }
+    ] },
+  { "id": 3, "name": "X-Frango", "category": "lanches", "price": 20.9, "description": "Filé de frango grelhado, queijo, alface e milho.", "image": null,
+    "ingredients": [
+      { "id": "queijo", "name": "Queijo", "included": true, "extraPrice": 0 },
+      { "id": "alface", "name": "Alface", "included": true, "extraPrice": 0 },
+      { "id": "milho", "name": "Milho", "included": true, "extraPrice": 0 },
+      { "id": "catupiry", "name": "Catupiry", "included": false, "extraPrice": 3 }
+    ] },
+  { "id": 4, "name": "Cachorro-quente completo", "category": "lanches", "price": 14.9, "description": "Salsicha, molho de tomate caseiro, milho e batata palha.", "image": null,
+    "ingredients": [
+      { "id": "milho", "name": "Milho", "included": true, "extraPrice": 0 },
+      { "id": "batata-palha", "name": "Batata palha", "included": true, "extraPrice": 0 },
+      { "id": "queijo-ralado", "name": "Queijo ralado", "included": false, "extraPrice": 2 }
+    ] },
+  { "id": 5, "name": "Batata frita", "category": "porcoes", "price": 16, "description": "Porção crocante de batata frita, serve até duas pessoas.", "image": null, "ingredients": [] },
+  { "id": 6, "name": "Isca de frango", "category": "porcoes", "price": 24, "description": "Tiras de frango empanadas com molho de mostarda e mel.", "image": null, "ingredients": [] },
+  { "id": 7, "name": "Anéis de cebola", "category": "porcoes", "price": 18, "description": "Cebola empanada e frita na hora.", "image": null, "ingredients": [] },
+  { "id": 8, "name": "Refrigerante lata", "category": "bebidas", "price": 6, "description": "Lata de 350 ml, gelada.", "image": null, "ingredients": [] },
+  { "id": 9, "name": "Suco natural de laranja", "category": "bebidas", "price": 9, "description": "Copo de 400 ml, feito na hora.", "image": null, "ingredients": [] },
+  { "id": 10, "name": "Água mineral", "category": "bebidas", "price": 4, "description": "Garrafa de 500 ml, sem gás.", "image": null, "ingredients": [] },
+  { "id": 11, "name": "Pudim de leite", "category": "sobremesas", "price": 8, "description": "Fatia de pudim caseiro com calda de caramelo.", "image": null, "ingredients": [] },
+  { "id": 12, "name": "Brigadeiro caseiro", "category": "sobremesas", "price": 5, "description": "Brigadeiro de panela enrolado na hora, cobertura de granulado.", "image": null, "ingredients": [] }
+]
