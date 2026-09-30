@@ -11,5 +11,5 @@ export default function Home() {
     router.replace(getSession() ? "/cardapio" : "/login");
   }, [router]);
 
-  return <p className="p-6 text-center" role="status">Abrindo YumQuick...</p>;
+  return <p className="p-6 text-center" role="status">Abrindo Aplicativo...</p>;
 }

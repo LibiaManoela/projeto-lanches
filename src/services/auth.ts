@@ -6,7 +6,7 @@ export interface SessionUser {
   email: string;
 }
 
-const SESSION_KEY = "yumquick-session";
+const SESSION_KEY = "Aplicativo-session";
 
 export function login(email: string, password: string) {
   return request<SessionUser>("/api/auth/login", {

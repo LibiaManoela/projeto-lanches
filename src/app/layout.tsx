@@ -12,7 +12,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "YumQuick",
+  title: "Aplicativo",
   description: "Peça seu lanche de forma rápida.",
 };
 

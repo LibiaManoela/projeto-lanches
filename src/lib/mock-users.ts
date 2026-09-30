@@ -7,8 +7,8 @@ interface MockUser {
   password: string;
 }
 
-const globalUsers = globalThis as typeof globalThis & { yumquickUsers?: MockUser[] };
-const users = globalUsers.yumquickUsers ?? (globalUsers.yumquickUsers = [...initialUsers]);
+const globalUsers = globalThis as typeof globalThis & { AplicativoUsers?: MockUser[] };
+const users = globalUsers.AplicativoUsers ?? (globalUsers.AplicativoUsers = [...initialUsers]);
 
 export function findUserByEmail(email: string) {
   const normalizedEmail = email.trim().toLowerCase();

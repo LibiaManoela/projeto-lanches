@@ -82,7 +82,7 @@ export default function CardapioPage() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
       <header className="mb-8 flex min-h-12 items-center justify-between gap-4 border-b border-laranja-claro pb-4">
-        <Link href="/cardapio" className="font-poppins text-2xl font-bold text-laranja-escuro">YUMQUICK</Link>
+        <Link href="/cardapio" className="font-poppins text-2xl font-bold text-laranja-escuro">Aplicativo</Link>
         <div className="flex items-center gap-3">
           {user && <span className="hidden text-sm text-cinza sm:inline">Olá, {user.name}</span>}
           <button type="button" onClick={signOut} className="min-h-11 rounded-md px-3 font-medium text-laranja-escuro underline-offset-4 hover:underline">
