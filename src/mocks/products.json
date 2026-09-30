@@ -1,0 +1,12 @@
+{
+  "id": 1,
+  "name": "X-Burger da Casa",
+  "category": "lanches",
+  "price": 18.9,
+  "description": "Pão macio, hambúrguer artesanal, queijo e molho especial.",
+  "image": "/images/x-burger.jpg",
+  "ingredients": [
+    { "id": "queijo", "name": "Queijo", "removable": true, "extraPrice": 0 },
+    { "id": "bacon", "name": "Bacon", "removable": true, "extraPrice": 4 }
+  ]
+}
