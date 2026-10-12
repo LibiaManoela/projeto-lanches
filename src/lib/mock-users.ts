@@ -25,3 +25,7 @@ export function addUser(name: string, email: string, password: string) {
   users.push(user);
   return user;
 }
+
+export function findUserById(id: number) {
+  return users.find((user) => user.id === id);
+}
