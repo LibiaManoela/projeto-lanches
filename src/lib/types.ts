@@ -20,7 +20,7 @@ export interface Product {
   category: Category;
   price: number;
   description: string;
-  image: string | null; // null = usa o emoji da categoria até termos as fotos
+  image: string | null; // null = usa o emoji da categoria como fallback
   ingredients: Ingredient[];
 }
 

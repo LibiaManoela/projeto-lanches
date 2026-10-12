@@ -4,7 +4,13 @@ import { categoryById } from "@/lib/categories";
 import { formatBRL } from "@/lib/format";
 import type { Product } from "@/lib/types";
 
-export default function ProductCard({ product }: { product: Product }) {
+export default function ProductCard({
+  product,
+  loading = "lazy",
+}: {
+  product: Product;
+  loading?: "eager" | "lazy";
+}) {
   const category = categoryById(product.category);
 
   return (
@@ -15,6 +21,8 @@ export default function ProductCard({ product }: { product: Product }) {
             src={product.image}
             alt={product.name}
             fill
+            loading={loading}
+            unoptimized={process.env.NODE_ENV === "development"}
             sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
             className="object-cover"
           />

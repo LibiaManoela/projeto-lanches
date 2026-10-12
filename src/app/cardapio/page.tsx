@@ -162,9 +162,9 @@ export default function CardapioPage() {
 
       {status !== "error" && products.length > 0 && (
         <ul className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {products.map((product) => (
+          {products.map((product, index) => (
             <li key={product.id}>
-              <ProductCard product={product} />
+              <ProductCard product={product} loading={index === 0 ? "eager" : "lazy"} />
             </li>
           ))}
         </ul>

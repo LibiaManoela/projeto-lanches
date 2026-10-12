@@ -36,6 +36,7 @@ As páginas de detalhes do produto, carrinho, checkout e acompanhamento do pedid
 | `src/mocks/` | Dados locais de demonstração. |
 | `src/services/` | Chamadas à API e serviços usados pelas páginas. |
 | `src/styles/` | Tokens e estilos compartilhados. |
+| `public/images/products/` | Imagens dos produtos servidas como arquivos estáticos. |
 
 ### Tecnologias
 
@@ -62,6 +63,7 @@ O projeto ainda não possui um comando de testes automatizados configurado no `p
 - **O aplicativo não abre:** confirme no terminal se o servidor está pronto e acesse o endereço e a porta informados por ele.
 - **O login é recusado:** use uma das contas listadas em [Acesso de demonstração](#acesso-de-demonstração). O cadastro local também é apagado quando o servidor reinicia.
 - **O cardápio não carrega:** verifique erros no terminal onde `npm run dev` está executando. A rota `http://localhost:3000/api/products` deve retornar os produtos em JSON quando o servidor estiver usando a porta `3000`.
+- **Trocar uma foto:** substitua o arquivo correspondente em `public/images/products/`, mantendo o mesmo nome. No modo de desenvolvimento as imagens não passam pelo otimizador do Next.js, então uma atualização da página deve mostrar o arquivo novo. Para produção, execute um novo build e publique os arquivos atualizados.
 - **Testar o estado de erro:** abra `/cardapio?simular=erro` para simular uma falha da API de produtos.
 
 ## Como executar

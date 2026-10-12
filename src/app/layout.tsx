@@ -18,7 +18,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR" className={`${spartan.variable} ${inter.variable} ${poppins.variable}`}>
+    <html
+      lang="pt-BR"
+      className={`${spartan.variable} ${inter.variable} ${poppins.variable}`}
+      suppressHydrationWarning
+    >
       <body className="bg-branco-suave font-sans text-marrom antialiased">
         <a
           href="#conteudo"
