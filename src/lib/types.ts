@@ -38,7 +38,9 @@ export interface CartItem {
   quantity: number;
   removedIngredients: string[]; // ids
   addedIngredients: string[]; // ids
+  image?: string | null;
 }
+
 
 export type OrderStatus =
   | "recebido"
