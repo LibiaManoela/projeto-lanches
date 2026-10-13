@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
+import Header from "@/components/Header";
+// import Link from "next/link";
 import ProductCard from "@/components/ProductCard";
 import { CATEGORIES } from "@/lib/categories";
 import type { Product } from "@/lib/types";
@@ -81,7 +82,7 @@ export default function CardapioPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
-      <header className="mb-8 flex min-h-12 items-center justify-between gap-4 border-b border-laranja-claro pb-4">
+      {/* <header className="mb-8 flex min-h-12 items-center justify-between gap-4 border-b border-laranja-claro pb-4">
         <Link href="/cardapio" className="font-poppins text-2xl font-bold text-laranja-escuro">Aplicativo</Link>
         <div className="flex items-center gap-3">
           {user && <span className="hidden text-sm text-cinza sm:inline">Olá, {user.name}</span>}
@@ -89,7 +90,8 @@ export default function CardapioPage() {
             Sair
           </button>
         </div>
-      </header>
+      </header> */}
+      <Header/>
       <h1 className="text-[28px] font-bold">Cardápio</h1>
       <p className="mt-1 text-cinza">Escolha seu lanche e faça o pedido.</p>
 

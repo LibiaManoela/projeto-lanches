@@ -14,3 +14,15 @@ export function getProducts(params: GetProductsParams = {}, signal?: AbortSignal
   if (params.simular) search.set("simular", params.simular);
   return request<Product[]>(`/api/products?${search.toString()}`, { signal });
 }
+
+interface GetProductParams {
+  simular?: string;
+}
+
+export function getProduct(id: number | string, params: GetProductParams = {}, signal?: AbortSignal) {
+  const search = new URLSearchParams();
+  if (params.simular) search.set("simular", params.simular);
+  const query = search.toString() ? `?${search.toString()}` : "";
+  return request<Product>(`/api/products/${id}${query}`, { signal });
+}
+
