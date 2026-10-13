@@ -49,6 +49,36 @@ export type OrderStatus =
   | "entregue"
   | "cancelado";
 
+export type PaymentMethod = "pix" | "cartao_credito" | "cartao_debito" | "dinheiro";
+
+/** Campos do formulário de checkout (como o usuário preenche). */
+export interface CheckoutFields {
+  address: string; // rua e bairro
+  number: string; // número ("S/N" se não houver)
+  complement: string; // opcional
+  zipCode: string; // "00000-000"
+  phone: string; // telefone brasileiro com DDD
+  notes: string; // opcional
+  paymentMethod: PaymentMethod | ""; // "" = ainda não escolhida
+}
+
+/** Pedido registrado pela API. Nome, preço e total são calculados no servidor. */
+export interface Order {
+  id: number;
+  userId: number;
+  createdAt: string; // ISO 8601
+  status: OrderStatus;
+  items: CartItem[];
+  total: number;
+  address: string;
+  number: string;
+  complement: string;
+  zipCode: string; // "00000-000"
+  phone: string; // só dígitos, com DDD
+  notes: string;
+  paymentMethod: PaymentMethod;
+}
+
 export interface ApiErrorBody {
   message: string;
 }
