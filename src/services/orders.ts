@@ -1,5 +1,15 @@
-import type { CartItem, CheckoutFields, Order, PaymentMethod } from "@/lib/types";
+import type { CartItem, CheckoutFields, Order, OrderStatus, PaymentMethod } from "@/lib/types";
 import { request } from "./api";
+
+export type OrderSummary = Pick<Order, "id" | "createdAt" | "status" | "items" | "total">;
+
+export function getOrders(userId: number, signal?: AbortSignal) {
+  return request<OrderSummary[]>("/api/orders", {
+    headers: { "X-User-Id": String(userId) },
+    cache: "no-store",
+    signal,
+  });
+}
 
 // Só o necessário para identificar o item: nome, preço e total são calculados no servidor.
 export interface CreateOrderPayload extends Omit<CheckoutFields, "paymentMethod"> {
@@ -31,5 +41,16 @@ export function getOrder(userId: number, id: string, params: GetOrderParams = {}
     headers: { "X-User-Id": String(userId) },
     cache: "no-store", // o status muda: nunca reaproveitar resposta antiga
     signal,
+  });
+}
+
+export function updateOrderStatus(userId: number, id: string, status: OrderStatus) {
+  return request<Order>(`/api/orders/${encodeURIComponent(id)}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      "X-User-Id": String(userId),
+    },
+    body: JSON.stringify({ status }),
   });
 }

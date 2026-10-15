@@ -17,7 +17,7 @@ import type { Order } from "@/lib/types";
 import { formatPhone } from "@/lib/validators";
 import { ApiError } from "@/services/api";
 import { clearSession, getSession, type SessionUser } from "@/services/auth";
-import { getOrder } from "@/services/orders";
+import { getOrder, updateOrderStatus } from "@/services/orders";
 
 type Status = "loading" | "ok" | "error";
 
@@ -38,6 +38,8 @@ export default function PedidoPage() {
   const [errorCode, setErrorCode] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
   const [refreshFailed, setRefreshFailed] = useState(false);
+  const [cancelling, setCancelling] = useState(false);
+  const [cancelError, setCancelError] = useState("");
   const [updatedAt, setUpdatedAt] = useState<Date | null>(null);
   const [confirmed, setConfirmed] = useState(false);
 
@@ -121,6 +123,27 @@ export default function PedidoPage() {
     if (!user) return;
     setStatus("loading");
     load(user.id, false);
+  }
+
+  async function cancelOrder() {
+    if (!user || !order || !["recebido", "em_preparo"].includes(order.status)) return;
+    if (!window.confirm("Deseja cancelar este pedido?")) return;
+
+    setCancelling(true);
+    setCancelError("");
+    controllerRef.current?.abort();
+    try {
+      const updatedOrder = await updateOrderStatus(user.id, orderId, "cancelado");
+      setOrder(updatedOrder);
+      setUpdatedAt(new Date());
+      setRefreshFailed(false);
+    } catch (error) {
+      setCancelError(
+        error instanceof ApiError ? error.message : "Não foi possível cancelar o pedido. Tente novamente.",
+      );
+    } finally {
+      setCancelling(false);
+    }
   }
 
   const statusInfo = order ? ORDER_STATUS[order.status] : undefined;
@@ -227,6 +250,16 @@ export default function PedidoPage() {
               >
                 {refreshing ? "Atualizando..." : "Atualizar"}
               </button>
+              {["recebido", "em_preparo"].includes(order.status) && (
+                <button
+                  type="button"
+                  onClick={cancelOrder}
+                  disabled={cancelling}
+                  className="min-h-11 rounded-full border border-marrom px-5 text-[15px] font-medium text-marrom hover:bg-branco-suave disabled:cursor-wait disabled:opacity-70"
+                >
+                  {cancelling ? "Cancelando..." : "Cancelar pedido"}
+                </button>
+              )}
               {updatedAt && (
                 <p className="text-sm text-cinza">
                   Atualizado às {updatedAt.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
@@ -236,6 +269,11 @@ export default function PedidoPage() {
             {refreshFailed && (
               <p role="status" className="mt-3 rounded-md bg-laranja-claro p-3 text-sm font-medium">
                 Não foi possível atualizar agora. Mostrando a última informação recebida.
+              </p>
+            )}
+            {cancelError && (
+              <p role="alert" className="mt-3 rounded-md bg-laranja-claro p-3 text-sm font-medium">
+                {cancelError}
               </p>
             )}
           </section>

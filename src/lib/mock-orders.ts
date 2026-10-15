@@ -27,6 +27,36 @@ export function findOrderById(id: number) {
   return orders.find((order) => order.id === id);
 }
 
+export function findOrdersByUserId(userId: number) {
+  return orders
+    .filter((order) => order.userId === userId)
+    .sort((first, second) => second.createdAt.localeCompare(first.createdAt));
+}
+
+const DEMO_STATUS_STEP_MS = 15_000;
+const DEMO_STATUS_STEPS: OrderStatus[] = [
+  "recebido",
+  "em_preparo",
+  "saiu_para_entrega",
+  "entregue",
+];
+
+export function advanceDemoOrderStatus(order: Order, now = Date.now()) {
+  if (order.status === "cancelado" || order.status === "entregue") return order;
+
+  const elapsed = now - new Date(order.createdAt).getTime();
+  if (!Number.isFinite(elapsed) || elapsed < 0) return order;
+
+  const targetIndex = Math.min(
+    Math.floor(elapsed / DEMO_STATUS_STEP_MS),
+    DEMO_STATUS_STEPS.length - 1,
+  );
+  const currentIndex = DEMO_STATUS_STEPS.indexOf(order.status);
+  if (targetIndex > currentIndex) order.status = DEMO_STATUS_STEPS[targetIndex];
+
+  return order;
+}
+
 export function findOrderByKey(userId: number, key: string) {
   const id = orderKeys.get(`${userId}:${key}`);
   return id === undefined ? undefined : findOrderById(id);

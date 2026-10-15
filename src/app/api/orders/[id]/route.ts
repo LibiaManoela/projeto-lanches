@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { findOrderById, getRequestUserId, updateOrderStatus } from "@/lib/mock-orders";
+import { advanceDemoOrderStatus, findOrderById, getRequestUserId, updateOrderStatus } from "@/lib/mock-orders";
 import { ORDER_STATUS, STATUS_TRANSITIONS, isOrderStatus } from "@/lib/orders";
 
 type Context = { params: Promise<{ id: string }> };
@@ -30,12 +30,13 @@ export async function GET(request: NextRequest, { params }: Context) {
 		return NextResponse.json({ message: "Pedido não encontrado." }, { status: 404 });
 	}
 
+	advanceDemoOrderStatus(order);
 	return NextResponse.json(order);
 }
 
 // PATCH /api/orders/1  { "status": "em_preparo" }
-// Não existe perfil de lojista no projeto: esta rota é a forma de avançar o status
-// (ex.: por curl) e NÃO tem autorização. Em produção, restrinja-a à operação da loja.
+// A demonstração operacional via curl não tem perfil de lojista; em produção,
+// restrinja essas alterações à operação da loja. Cancelamentos exigem X-User-Id.
 export async function PATCH(request: Request, { params }: Context) {
 	const id = parseId((await params).id);
 	const order = id === null ? undefined : findOrderById(id);
@@ -53,6 +54,17 @@ export async function PATCH(request: Request, { params }: Context) {
 	const status = body && typeof body === "object" ? (body as { status?: unknown }).status : undefined;
 	if (!isOrderStatus(status)) {
 		return NextResponse.json({ message: "Informe um status válido." }, { status: 422 });
+	}
+	// Alterações feitas por um cliente precisam pertencer à sessão informada.
+	// Sem X-User-Id, a rota continua disponível para a demonstração operacional via curl.
+	if (request.headers.has("x-user-id") || status === "cancelado") {
+		const userId = getRequestUserId(request);
+		if (userId === null) {
+			return NextResponse.json({ message: "Sessão inválida. Entre novamente." }, { status: 401 });
+		}
+		if (order.userId !== userId) {
+			return NextResponse.json({ message: "Pedido não encontrado." }, { status: 404 });
+		}
 	}
 	if (!STATUS_TRANSITIONS[order.status].includes(status)) {
 		return NextResponse.json(
