@@ -1,138 +1,260 @@
 # Aplicativo — projeto-lanches
-Repositório da Avaliação 2 - Projeto de Desenvolvimento Web de Programação para Interface de Usuário.
 
-## Sobre o projeto
+Projeto acadêmico da Avaliação 2 de Desenvolvimento Web da disciplina de Programação para Interface de Usuário. O Aplicativo é uma demonstração de uma loja de lanches: permite explorar produtos, personalizar itens, montar um carrinho, simular um checkout e acompanhar pedidos.
 
-Aplicação web acadêmica para explorar o cardápio de uma lanchonete, personalizar produtos, realizar pedidos e acompanhar seu andamento. Os dados são locais/de demonstração; não há banco de dados de produção.
+> **Importante:** esta aplicação foi feita para fins acadêmicos. Login, cadastro e pedidos usam dados simulados, não há banco de dados ou autenticação de produção, e o estado mantido pelo servidor pode desaparecer quando o processo reinicia. Não use dados pessoais ou credenciais reais.
 
-### Funcionalidades
+## Índice
 
-- Login e cadastro demonstrativos.
-- Listagem de produtos com busca por texto e filtro por categoria.
-- Detalhes de produto com seleção de ingredientes e quantidade.
-- Carrinho com edição de quantidades, remoção de itens e subtotal.
-- Checkout com validação dos campos e criação idempotente do pedido.
-- Acompanhamento do pedido, atualização periódica do status e cancelamento nas etapas permitidas.
-- Estados de carregamento, erro e dados não encontrados nas telas que consultam a API.
+- [Funcionalidades](#funcionalidades)
+- [Páginas](#páginas)
+- [Tecnologias e bibliotecas](#tecnologias-e-bibliotecas)
+- [Organização do projeto](#organização-do-projeto)
+- [Dados, sessão e limitações](#dados-sessão-e-limitações)
+- [API](#api)
+- [Acessibilidade e interface](#acessibilidade-e-interface)
+- [Requisitos e execução local](#requisitos-e-execução-local)
+- [Scripts disponíveis](#scripts-disponíveis)
+- [Contas de demonstração](#contas-de-demonstração)
+- [Testes e qualidade](#testes-e-qualidade)
+- [Publicação](#publicação)
+- [Equipe e histórico](#equipe-e-histórico)
+- [Diagnóstico rápido](#diagnóstico-rápido)
 
-### Páginas
+## Funcionalidades
 
-| Endereço | Conteúdo |
+- Login e criação de conta demonstrativos.
+- Catálogo com 12 produtos de exemplo, busca por nome e descrição e filtro por categoria.
+- Busca com debounce de 300 ms, sem distinção entre letras maiúsculas/minúsculas ou acentos.
+- Página de produto com imagem, ingredientes personalizáveis, adicionais com preço extra e seletor de quantidade.
+- Carrinho persistido no navegador, com atualização de quantidades, remoção de itens, limpeza e cálculo de subtotal.
+- Checkout com sete campos — endereço, número, complemento, CEP, telefone, forma de pagamento e observações —, máscaras de CEP e telefone, validação no navegador e no servidor e resumo do pedido.
+- Formas de pagamento simuladas: Pix, cartão de crédito, cartão de débito e dinheiro.
+- Criação idempotente de pedido: reenvios com a mesma chave de idempotência não criam um pedido duplicado.
+- Recalculo de nome, preço e total dos itens no servidor a partir do catálogo; valores enviados pelo navegador não são considerados confiáveis.
+- Página **Meus pedidos**, que lista os pedidos disponíveis para o usuário atual e permite abrir o acompanhamento de cada um.
+- Acompanhamento com consulta periódica, atualização manual e cancelamento permitido enquanto o pedido estiver recebido ou em preparação.
+- Progressão automática dos status para fins de demonstração: recebido, em preparação, saiu para entrega e entregue. O status avança em intervalos de 15 segundos após a criação.
+- Estados de carregamento, erro, lista vazia e recurso não encontrado em telas que consultam a API.
+
+## Páginas
+
+| Rota | Descrição |
 | --- | --- |
-| `/` | Redireciona para o cardápio se houver sessão; caso contrário, abre o login. |
-| `/login` | Login e cadastro demonstrativos. |
-| `/cardapio` | Lista, busca e filtros de produtos. |
-| `/produto/[id]` | Detalhes, personalização e adição ao carrinho. |
-| `/carrinho` | Itens, quantidades e subtotal. |
-| `/checkout` | Formulário e confirmação do pedido. |
-| `/pedidos` | Lista os pedidos do usuário e permite abrir o acompanhamento de cada um. |
-| `/pedido/[id]` | Status, itens, endereço, pagamento e cancelamento. |
+| `/` | Redireciona para o cardápio se houver sessão no navegador; caso contrário, para o login. |
+| `/login` | Alterna entre entrar e criar uma conta demonstrativa. |
+| `/cardapio` | Catálogo, busca e filtro por categoria; o cabeçalho oferece acesso a Meus pedidos e ao carrinho. |
+| `/produto/[id]` | Detalhes e personalização de um produto. |
+| `/carrinho` | Itens selecionados, personalizações, quantidades e subtotal. |
+| `/checkout` | Endereço, contato, forma de pagamento, observações e revisão do pedido. |
+| `/pedidos` | Lista de pedidos do usuário e links para acompanhamento individual. |
+| `/pedido/[id]` | Status, etapas, itens, total, endereço, pagamento e cancelamento, quando permitido. |
 
-### API
+## Tecnologias e bibliotecas
 
-| Método | Endpoint | Uso |
+Versões abaixo correspondem às dependências instaladas e verificadas no ambiente durante a atualização deste README. O `package.json` declara intervalos de versão; `package-lock.json` registra a resolução usada pelo npm.
+
+| Tecnologia/biblioteca | Versão instalada | Uso |
 | --- | --- | --- |
-| `POST` | `/api/auth/login` | Login demonstrativo. |
-| `POST` | `/api/auth/register` | Cadastro demonstrativo. |
-| `GET` | `/api/products` | Lista produtos; aceita busca e filtros. |
-| `GET` | `/api/products/[id]` | Consulta um produto. |
-| `POST` | `/api/orders` | Cria um pedido (`X-User-Id`; aceita `Idempotency-Key`). |
-| `GET` | `/api/orders` | Lista os pedidos do usuário autenticado pelo cabeçalho `X-User-Id`. |
-| `GET` | `/api/orders/[id]` | Consulta o pedido do usuário (`X-User-Id`). |
-| `PATCH` | `/api/orders/[id]` | Atualiza status; a interface usa para cancelar o pedido. |
-| `GET` | `/api/shipping` | Ainda não implementado (responde `501`). |
-| `DELETE` | `/api/orders/[id]` | Ainda não implementado (responde `501`). |
+| [Next.js](https://nextjs.org/) | 16.3.8 | Framework React, roteamento App Router, renderização e Route Handlers da API. |
+| [React](https://react.dev/) | 19.3.0 | Componentes e interface. |
+| [React DOM](https://react.dev/) | 19.3.0 | Renderização da aplicação React para a web. |
+| [TypeScript](https://www.typescriptlang.org/) | 5.9.3 | Tipos e verificação estática do código. |
+| [Tailwind CSS](https://tailwindcss.com/) | 4.3.3 | Estilização utilitária e responsiva. |
+| `@tailwindcss/postcss` | 4.3.3 | Integração do Tailwind CSS 4 com PostCSS. |
+| `@types/node` | 22.20.4 | Definições de tipos de Node.js usadas durante desenvolvimento e compilação. |
+| `@types/react` | 19.3.0 | Definições TypeScript do React. |
+| `@types/react-dom` | 19.3.0 | Definições TypeScript do React DOM. |
 
-No modo de demonstração, o status avança automaticamente a cada 15 segundos após a criação do pedido, até ser entregue. O pedido pode ser cancelado enquanto estiver como recebido ou em preparação. A opção **Meus pedidos** no cardápio lista os pedidos disponíveis para a sessão atual.
+### Outras APIs e recursos utilizados
 
-### Estrutura do código
+- **Next.js App Router:** páginas em `src/app/**/page.tsx` e endpoints em arquivos `route.ts`.
+- **Route Handlers e Fetch API:** chamadas HTTP internas feitas pelo navegador aos endpoints `/api/...`, com `Request`, `Response`, `NextRequest` e `NextResponse`.
+- **React Hooks:** `useState`, `useEffect`, `useCallback`, `useMemo`, `useRef`, `use` e `useSyncExternalStore` gerenciam formulários, estado e sincronização do carrinho.
+- **Web Storage:** `sessionStorage` guarda a sessão demonstrativa; `localStorage` persiste o carrinho na cópia local do navegador.
+- **`next/image`:** componente de imagem do Next.js para imagens do catálogo.
+- **`next/font/google`:** carrega League Spartan, Inter e Poppins pelo mecanismo de fontes do Next.js.
+- **TypeScript strict mode** e alias de importação `@/*` apontando para `src/*`.
+- **PostCSS:** configurado com o plugin `@tailwindcss/postcss`.
+- **JSON local:** os catálogos de produtos e usuários iniciais estão em `src/mocks/`.
+- **APIs nativas do navegador:** `AbortController` para cancelar buscas obsoletas, `URLSearchParams` para filtros e consulta, `Intl.NumberFormat` para moeda, `Intl.DateTimeFormat` para data e hora, e `<dialog>` nativo para o diálogo de confirmação do produto.
+
+Não há dependências instaladas para uma biblioteca de componentes, gerenciamento externo de estado, formulários, validação, ícones, testes automatizados, lint ou formatação. Em particular, o projeto não usa Zustand, React Hook Form, Zod, ESLint, Prettier, Jest, Vitest ou Playwright. As validações e componentes são implementados no próprio projeto com TypeScript, React e APIs nativas.
+
+As dependências diretas declaradas em `package.json` são `next`, `react`, `react-dom`, `tailwindcss` e `@tailwindcss/postcss`. Os pacotes `@types/*` e `typescript` são dependências de desenvolvimento. Não há biblioteca externa de ícones: os ícones visuais usados na interface são emojis e caracteres de texto.
+
+## Organização do projeto
 
 | Caminho | Responsabilidade |
 | --- | --- |
-| `src/app/` | Páginas e rotas da aplicação. |
-| `src/app/api/` | Endpoints da API, incluindo autenticação e produtos. |
-| `src/components/` | Componentes reutilizáveis da interface. |
-| `src/lib/` | Tipos, categorias, formatação e dados auxiliares. |
-| `src/mocks/` | Dados locais de demonstração. |
-| `src/services/` | Chamadas à API e serviços usados pelas páginas. |
-| `src/styles/` | Tokens e estilos compartilhados. |
-| `public/images/products/` | Imagens dos produtos servidas como arquivos estáticos. |
+| `src/app/` | Rotas e páginas da interface. |
+| `src/app/api/` | Route Handlers para autenticação, produtos, pedidos e frete. |
+| `src/components/` | Componentes reutilizados, como cabeçalho e cartão de produto. |
+| `src/lib/` | Tipos compartilhados, validação, categorias, pagamentos, formatação e regras de pedidos. |
+| `src/mocks/` | Dados JSON de exemplo para produtos, usuários e frete. |
+| `src/services/` | Funções cliente para chamadas à API e autenticação. |
+| `src/store/` | Store simples do carrinho baseada em `localStorage` e `useSyncExternalStore`. |
+| `src/styles/tokens.css` | Tokens de cor do design system definidos como tema Tailwind. |
+| `src/app/globals.css` | Importação do Tailwind, configuração de fontes e estilos globais de foco. |
+| `public/images/products/` | Imagens locais dos produtos usadas no cardápio. |
+| `package.json` | Dependências e scripts npm do projeto. |
+| `package-lock.json` | Resolução travada das dependências para instalação reproduzível via `npm ci`. |
+| `next.config.ts` | Configuração do Next.js; atualmente sem opções adicionais. |
+| `postcss.config.mjs` | Configuração PostCSS para o Tailwind CSS. |
+| `tsconfig.json` | Configuração TypeScript, incluindo modo estrito e alias `@/*`. |
 
-### Tecnologias
+> **Nota de implementação:** o carrinho realmente utilizado pela interface está em `src/store/carrinho.ts`. `src/services/cart.ts` existe no repositório, mas não é importado pelas páginas atuais; não é a implementação ativa do carrinho.
 
-Next.js, React, TypeScript e Tailwind CSS.
+## Dados, sessão e limitações
 
-### Equipe
+O comportamento de armazenamento é diferente por tipo de dado:
 
-Os três integrantes abaixo aparecem no histórico de commits do repositório. O histórico também registra dois merges de pull requests:
+| Dado | Onde fica | Persistência/limitação |
+| --- | --- | --- |
+| Produtos | `src/mocks/products.json` | Dados locais de demonstração, não são lidos de banco de dados. |
+| Usuários iniciais | `src/mocks/users.json` | Contas fixas para demonstração. |
+| Novas contas | Memória do processo servidor (`globalThis`) | Podem desaparecer ao reiniciar o processo; instâncias serverless não compartilham necessariamente a mesma memória. |
+| Pedidos | Memória do processo servidor (`globalThis`) | Podem desaparecer ao reiniciar o processo ou não estar disponíveis em outra instância, incluindo em hospedagem serverless. |
+| Sessão do usuário | `sessionStorage` do navegador | Limitada à sessão da aba; é um identificador demonstrativo, não um token seguro de autenticação. |
+| Carrinho | `localStorage` do navegador | Persiste no navegador até ser limpo; não é armazenado no servidor nem associado de forma segura à conta. |
+| Frete | Não disponível | A rota atual responde `501`; `src/mocks/shipping.json` está vazio. |
 
-| Integrante (nome exibido no Git) | Contribuições registradas |
+O cabeçalho `X-User-Id` identifica o usuário nas chamadas da API, mas seu valor vem do cliente e pode ser falsificado. Não é uma medida de autenticação ou autorização adequada para produção. A aplicação também não usa banco de dados, serviço de sessão, hash de senha, pagamento real, integração com ViaCEP ou provedor de frete. Para uso real, é necessário implementar autenticação segura e persistência compartilhada, além das integrações que faltam.
+
+## API
+
+Os endpoints são implementados dentro de `src/app/api/`. As respostas são JSON, exceto quando indicado. Os cabeçalhos `X-User-Id` e `Idempotency-Key` são parte da implementação demonstrativa atual.
+
+| Método | Endpoint | Descrição |
+| --- | --- | --- |
+| `POST` | `/api/auth/login` | Valida e-mail e senha contra as contas mock. Retorna os dados públicos do usuário. |
+| `POST` | `/api/auth/register` | Valida nome, e-mail e senha; rejeita e-mail já cadastrado. |
+| `GET` | `/api/products` | Lista produtos; aceita `category`, `q` e `simular=erro`. |
+| `GET` | `/api/products/[id]` | Consulta produto por ID; aceita `simular=erro` ou `simular=404`. |
+| `POST` | `/api/orders` | Valida checkout, usuário e itens; recalcula preços; aceita `Idempotency-Key`. |
+| `GET` | `/api/orders` | Lista resumos dos pedidos pertencentes ao `X-User-Id` informado. |
+| `GET` | `/api/orders/[id]` | Retorna pedido do usuário informado por `X-User-Id`; aceita `simular=erro`. |
+| `PATCH` | `/api/orders/[id]` | Atualiza o status permitido; a interface usa a operação para cancelar. |
+| `GET` | `/api/shipping` | Não implementado; retorna `501 Not Implemented`. |
+| `DELETE` | `/api/orders/[id]` | Não implementado; retorna `501 Not Implemented`. |
+
+### Regras e respostas relevantes
+
+- Autenticação e identificador de usuário inválidos podem retornar `401`.
+- Recursos inexistentes ou que pertencem a outro usuário retornam `404`.
+- Erros de formato ou JSON inválido retornam `400`; dados de checkout inválidos retornam `422`.
+- Cadastro com e-mail repetido retorna `409`.
+- Transições de status incompatíveis com a etapa atual retornam `409`.
+- As regras de transição estão definidas em `src/lib/orders.ts`; cancelamento só é aceito em `recebido` e `em_preparo`.
+- A listagem ordena os pedidos do mais recente para o mais antigo e calcula o status demonstrativo ao consultar.
+- Os estados de pedido são `recebido`, `em_preparo`, `saiu_para_entrega`, `entregue` e `cancelado`.
+- O endpoint de criação retorna `201` para um novo pedido e `200` quando devolve um pedido já criado com a mesma chave de idempotência.
+- A interface acompanha o pedido com polling de 15 segundos e tenta atualizar ao retornar para uma aba visível; os estados finais entregue ou cancelado não continuam sendo consultados.
+- As falhas de API são encapsuladas em `ApiError` pelo helper `src/services/api.ts`, que preserva códigos HTTP e apresenta uma mensagem para falhas de conexão.
+
+## Acessibilidade e interface
+
+- Interface construída com classes responsivas do Tailwind CSS.
+- Documento em português do Brasil (`lang="pt-BR"`).
+- Link para pular diretamente ao conteúdo principal.
+- Indicadores de foco visível em elementos interativos.
+- Rótulos de formulário associados aos campos, indicação de erros, foco no primeiro campo inválido e uso de atributos ARIA quando necessário.
+- Mensagens de estado e atualizações de pedido expostas para tecnologias assistivas.
+- O modal de confirmação de produto utiliza o elemento nativo `<dialog>`.
+- Paleta da interface centralizada em `src/styles/tokens.css`.
+- Fontes: League Spartan como fonte geral, Inter para conteúdo e Poppins em títulos/componentes selecionados.
+
+### Tokens de cor
+
+| Token Tailwind | Cor |
 | --- | --- |
-| Libia Manoela (`libiamanoela`) | Estrutura inicial, autenticação, cardápio e imagens dos produtos. |
-| Bernardo ('Bernildo42') | Detalhes de produto e carrinho. |
-| Pedro Emilio Martinelli ('PedroEmilioMartinelli') | API e acompanhamento de pedidos, checkout. |
+| `laranja` | `#E95322` |
+| `laranja-escuro` | `#C8400F` |
+| `laranja-claro` | `#FFDECF` |
+| `amarelo` | `#F5CB58` |
+| `amarelo-claro` | `#F3E9B5` |
+| `amarelo-intenso` | `#F4BA1B` |
+| `marrom` | `#391713` |
+| `coral` | `#FA5A66` |
+| `cinza` | `#676767` |
+| `branco-suave` | `#F8F8F8` |
 
-### Publicação
+Esses recursos são implementações do projeto; a presença deles não representa, por si só, uma auditoria de conformidade WCAG AA nem uma pontuação Lighthouse. Uma avaliação automatizada e testes com tecnologias assistivas ainda devem ser realizados.
 
-URL de produção na Vercel: ainda não informada neste repositório.
+## Requisitos e execução local
 
-## Comandos úteis
+Requisitos: Node.js 20.9.0 ou superior e npm. A versão mínima do Node.js é a declarada pela dependência Next.js 16 instalada. O projeto não fixa a versão de Node.js em `package.json`.
 
-Para validar a compilação de produção:
+Na pasta raiz do repositório:
+
+```bash
+npm ci
+npm run dev
+```
+
+Abra o endereço indicado no terminal, normalmente `http://localhost:3000`. Mantenha o terminal aberto durante o uso. Para parar o servidor, pressione `Ctrl+C`.
+
+Se a porta `3000` estiver ocupada, o Next.js pode usar outra porta. Utilize o endereço informado pelo processo em execução. Evite iniciar mais de um servidor para a mesma cópia do projeto.
+
+Para executar a versão otimizada localmente:
 
 ```bash
 npm run build
-```
-
-Depois de uma compilação bem-sucedida, é possível executar a versão de produção localmente:
-
-```bash
 npm start
 ```
 
-O projeto ainda não possui um comando de testes automatizados configurado no `package.json`.
+## Scripts disponíveis
 
-## Diagnóstico rápido
+| Comando | Ação |
+| --- | --- |
+| `npm ci` | Instala as versões registradas no lockfile. |
+| `npm run dev` | Inicia o servidor de desenvolvimento Next.js. |
+| `npm run build` | Gera o build otimizado de produção. |
+| `npm start` | Inicia o servidor Next.js com o build de produção existente. |
 
-- **O aplicativo não abre:** confirme no terminal se o servidor está pronto e acesse o endereço e a porta informados por ele.
-- **O login é recusado:** use uma das contas listadas em [Acesso de demonstração](#acesso-de-demonstração). Contas cadastradas localmente também são apagadas quando o servidor reinicia.
-- **O pedido não é encontrado depois de uma publicação:** os pedidos e contas cadastradas ficam em memória no servidor. Em ambientes serverless, como a Vercel, diferentes instâncias podem não compartilhar esse estado; a aplicação ainda precisa de armazenamento persistente para uso confiável em produção.
-- **O cardápio não carrega:** verifique erros no terminal onde `npm run dev` está executando. A rota `http://localhost:3000/api/products` deve retornar os produtos em JSON quando o servidor estiver usando a porta `3000`.
-- **Trocar uma foto:** substitua o arquivo correspondente em `public/images/products/`, mantendo o mesmo nome. No modo de desenvolvimento as imagens não passam pelo otimizador do Next.js, então uma atualização da página deve mostrar o arquivo novo. Para produção, execute um novo build e publique os arquivos atualizados.
-- **Testar o estado de erro:** abra `/cardapio?simular=erro` para simular uma falha da API de produtos.
+Não há scripts `test`, `lint` ou `format` configurados no `package.json`.
 
-## Como executar
+## Contas de demonstração
 
-Requisitos: Node.js e npm instalados.
-
-1. Abra um terminal na pasta raiz do projeto (a pasta que contém `package.json`).
-2. Instale as dependências:
-
-	```bash
-	npm ci
-	```
-
-3. Inicie o servidor de desenvolvimento:
-
-	```bash
-	npm run dev
-	```
-
-4. Aguarde o terminal indicar que o servidor está pronto e abra no navegador o endereço exibido, normalmente `http://localhost:3000`.
-
-Mantenha esse terminal aberto enquanto usa o aplicativo. Para encerrar o servidor, volte ao terminal e pressione `Ctrl+C`. Não é necessário iniciar mais de um servidor de desenvolvimento para a mesma cópia do projeto.
-
-### Porta ocupada
-
-Se a porta `3000` já estiver sendo usada, o Next.js pode iniciar o servidor em outra porta, como `3001`. Nesse caso, use o endereço que apareceu no terminal, não presuma que o aplicativo está em `http://localhost:3000`. Se houver outro servidor desta cópia do projeto em execução, encerre-o com `Ctrl+C` no terminal correspondente antes de iniciar um novo.
-
-### Acesso de demonstração
-
-Na tela de login, use uma das contas de demonstração:
+Na tela de login, podem ser utilizadas as contas pré-cadastradas:
 
 | E-mail | Senha |
 | --- | --- |
 | `ana@email.com` | `Senha@123` |
 | `carlos@email.com` | `Senha@123` |
 
-O login é simulado com dados locais para demonstração. Contas criadas pela opção **Criar conta** ficam apenas na memória do servidor e são removidas quando ele é reiniciado.
+O cadastro também pode ser testado pela opção **Criar conta**. Contas criadas durante a execução ficam apenas na memória do processo servidor e são apagadas quando ele reinicia.
+
+## Testes e qualidade
+
+- `npm run build` executa a compilação otimizada e a verificação TypeScript realizada pelo Next.js.
+- Não há suíte automatizada de testes unitários, integração ou ponta a ponta configurada.
+- Não há lint ou formatador configurados como scripts npm.
+- O build não substitui testes dos fluxos de interface, acessibilidade, API ou validação em dispositivos/tamanhos de tela reais.
+
+## Publicação
+
+O projeto pode ser hospedado em plataformas compatíveis com Next.js, mas a URL de produção da Vercel não foi informada no repositório. Antes de usar a demonstração em uma hospedagem serverless, considere que usuários novos e pedidos ficam em memória e não são compartilhados entre instâncias. Não há variáveis de ambiente de produção documentadas ou banco de dados configurado.
+
+## Equipe e histórico
+
+Os três integrantes abaixo aparecem no histórico de commits do repositório. O histórico também registra dois merges de pull requests:
+
+| Integrante (nome exibido no Git) | Contribuições registradas |
+| --- | --- |
+| Libia Manoela (`libiamanoela`) | Estrutura inicial, autenticação, cardápio e imagens dos produtos. |
+| Bernardo (`Bernildo42`) | Detalhes de produto e carrinho. |
+| Pedro Emilio Martinelli (`PedroEmilioMartinelli`) | API e acompanhamento de pedidos, checkout. |
+
+## Diagnóstico rápido
+
+- **O aplicativo não inicia:** confira a versão de Node.js, execute `npm ci` na raiz e veja as mensagens do terminal.
+- **A porta `3000` está ocupada:** use a porta informada pelo Next.js ao iniciar.
+- **O login é recusado:** confira o e-mail e a senha da seção [Contas de demonstração](#contas-de-demonstração). Contas criadas pela interface podem ter sido perdidas após reinício do servidor.
+- **O pedido não aparece em Meus pedidos:** confirme se está usando a mesma sessão/usuário e o mesmo processo servidor que criou o pedido. O armazenamento atual é em memória e não é compartilhado entre instâncias.
+- **O catálogo não carrega:** verifique o terminal e acesse `http://localhost:3000/api/products` se o servidor estiver usando a porta `3000`.
+- **Um produto não aparece:** confira o ID solicitado e os dados em `src/mocks/products.json`.
+- **Trocar uma imagem:** substitua o arquivo correspondente em `public/images/products/`, mantendo o nome usado pelo catálogo. Reinicie ou atualize a página em desenvolvimento; para produção, gere e publique um novo build.
+- **Simular falha ao carregar o catálogo:** acesse `/cardapio?simular=erro`.
+- **Simular falha ao carregar um produto:** acesse `/produto/1?simular=erro`; para testar o estado não encontrado, use `/produto/1?simular=404`.
+- **Simular falha ao carregar um pedido:** acesse `/pedido/1?simular=erro` com uma sessão e um pedido válidos.
