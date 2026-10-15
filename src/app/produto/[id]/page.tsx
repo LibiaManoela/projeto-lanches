@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, use } from "react";
+import { useEffect, useRef, useState, use } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -39,6 +39,15 @@ export default function ProdutoDetalhesPage({ params }: PageProps) {
 
   // Feedback de adição ao carrinho
   const [showAddedModal, setShowAddedModal] = useState(false);
+  const dialogRef = useRef<HTMLDialogElement>(null);
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    if (showAddedModal && !dialog.open) dialog.showModal();
+    if (!showAddedModal && dialog.open) dialog.close();
+  }, [showAddedModal]);
 
   // Busca dos dados do produto via service
   useEffect(() => {
@@ -172,7 +181,7 @@ export default function ProdutoDetalhesPage({ params }: PageProps) {
           aria-labelledby="titulo-erro"
           className="mx-auto max-w-xl rounded-3xl border border-coral/30 bg-white p-6 shadow-sm md:p-8"
         >
-          <div className="flex items-center gap-3 text-coral">
+          <div className="flex items-center gap-3">
             <span aria-hidden="true" className="text-3xl">⚠️</span>
             <h1 id="titulo-erro" className="text-xl font-bold text-marrom">
               Não foi possível carregar o produto
@@ -183,7 +192,7 @@ export default function ProdutoDetalhesPage({ params }: PageProps) {
             <button
               type="button"
               onClick={handleRetry}
-              className="min-h-11 rounded-full bg-laranja-escuro px-6 text-[15px] font-medium text-white shadow-sm transition-colors hover:bg-laranja focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-marrom"
+              className="min-h-11 rounded-full bg-laranja-escuro px-6 text-[15px] font-medium text-white shadow-sm transition-colors hover:bg-marrom focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-marrom"
             >
               Tentar novamente
             </button>
@@ -214,7 +223,7 @@ export default function ProdutoDetalhesPage({ params }: PageProps) {
           <div className="mt-6">
             <Link
               href="/cardapio"
-              className="inline-flex min-h-11 items-center justify-center rounded-full bg-laranja-escuro px-6 text-[15px] font-medium text-white shadow-sm hover:bg-laranja"
+              className="inline-flex min-h-11 items-center justify-center rounded-full bg-laranja-escuro px-6 text-[15px] font-medium text-white shadow-sm hover:bg-marrom"
             >
               Explorar outros lanches
             </Link>
@@ -244,7 +253,7 @@ export default function ProdutoDetalhesPage({ params }: PageProps) {
                 </span>
               )}
               {category && (
-                <div className="absolute left-4 top-4 rounded-full bg-white/90 px-3.5 py-1 text-xs font-semibold uppercase tracking-wider text-marrom backdrop-blur-sm shadow-sm ring-1 ring-laranja-claro">
+                <div className="absolute left-4 top-4 rounded-full bg-white/90 px-3.5 py-1 text-sm font-semibold uppercase tracking-wider text-marrom backdrop-blur-sm shadow-sm ring-1 ring-laranja-claro">
                   {category.emoji} {category.label}
                 </div>
               )}
@@ -280,7 +289,7 @@ export default function ProdutoDetalhesPage({ params }: PageProps) {
                     <legend className="px-1 text-sm font-semibold text-marrom">
                       Ingredientes inclusos (desmarque para remover)
                     </legend>
-                    <p className="mt-1 text-xs text-cinza">
+                    <p className="mt-1 text-sm text-cinza">
                       Prefere sem algum ingrediente? Desmarque as opções que não deseja:
                     </p>
                     <div className="mt-3 space-y-2.5">
@@ -306,9 +315,9 @@ export default function ProdutoDetalhesPage({ params }: PageProps) {
                                 {ingredient.name}
                               </span>
                             </span>
-                            <span className="text-xs font-semibold">
+                            <span className="text-sm font-semibold">
                               {isRemoved ? (
-                                <span className="rounded bg-coral/20 px-2 py-0.5 text-coral">
+                                <span className="rounded bg-laranja-claro px-2 py-0.5 text-marrom">
                                   Removido
                                 </span>
                               ) : (
@@ -328,7 +337,7 @@ export default function ProdutoDetalhesPage({ params }: PageProps) {
                     <legend className="px-1 text-sm font-semibold text-marrom">
                       Turbine seu pedido (adicionais)
                     </legend>
-                    <p className="mt-1 text-xs text-cinza">
+                    <p className="mt-1 text-sm text-cinza">
                       Escolha adicionais para deixar seu lanche ainda mais completo:
                     </p>
                     <div className="mt-3 space-y-2.5">
@@ -376,7 +385,7 @@ export default function ProdutoDetalhesPage({ params }: PageProps) {
               <div className="mt-8 rounded-2xl bg-white p-5 shadow-sm ring-1 ring-laranja-claro">
                 <div className="flex flex-wrap items-center justify-between gap-4">
                   <div>
-                    <span className="block text-xs font-semibold uppercase tracking-wider text-cinza">
+                    <span className="block text-sm font-semibold uppercase tracking-wider text-cinza">
                       Quantidade
                     </span>
                     <div className="mt-2 flex items-center gap-2">
@@ -409,14 +418,14 @@ export default function ProdutoDetalhesPage({ params }: PageProps) {
 
                   {/* Resumo do Valor Total Calculado */}
                   <div className="text-right" aria-live="polite">
-                    <span className="block text-xs font-semibold uppercase tracking-wider text-cinza">
+                    <span className="block text-sm font-semibold uppercase tracking-wider text-cinza">
                       Total ({quantity} {quantity === 1 ? "unidade" : "unidades"})
                     </span>
                     <span className="mt-1 block text-2xl font-black text-laranja-escuro sm:text-3xl">
                       {formatBRL(totalPrice)}
                     </span>
                     {extrasUnitPrice > 0 && (
-                      <span className="block text-xs text-cinza">
+                      <span className="block text-sm text-cinza">
                         (Unitário: {formatBRL(unitPrice)})
                       </span>
                     )}
@@ -428,7 +437,7 @@ export default function ProdutoDetalhesPage({ params }: PageProps) {
                   <button
                     type="button"
                     onClick={handleAddToCart}
-                    className="flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-laranja-escuro px-6 text-base font-bold text-white shadow-md transition-all hover:bg-laranja hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-marrom active:scale-[0.99]"
+                    className="flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-laranja-escuro px-6 text-base font-bold text-white shadow-md transition-all hover:bg-marrom hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-marrom active:scale-[0.99]"
                   >
                     <span>Adicionar ao carrinho</span>
                     <span aria-hidden="true">•</span>
@@ -442,14 +451,14 @@ export default function ProdutoDetalhesPage({ params }: PageProps) {
       )}
 
       {/* MODAL / DIALOG DE CONFIRMAÇÃO DE ITEM ADICIONADO AO CARRINHO */}
-      {showAddedModal && product && (
-        <div
-          role="dialog"
-          aria-modal="true"
+      {product && (
+        <dialog
+          ref={dialogRef}
+          onCancel={() => setShowAddedModal(false)}
           aria-labelledby="titulo-adicionado"
-          className="fixed inset-0 z-50 flex items-center justify-center bg-marrom/60 p-4 backdrop-blur-xs"
+          className="fixed inset-0 m-auto max-h-[calc(100%-2rem)] w-[calc(100%-2rem)] max-w-md overflow-y-auto border-0 bg-transparent p-0 text-marrom backdrop:bg-marrom/60"
         >
-          <div className="w-full max-w-md animate-in fade-in zoom-in-95 rounded-3xl bg-white p-6 shadow-2xl ring-1 ring-laranja-claro sm:p-7">
+          <div className="animate-in fade-in zoom-in-95 rounded-3xl bg-white p-6 shadow-2xl ring-1 ring-laranja-claro sm:p-7">
             <div className="flex items-center gap-3">
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-amarelo-claro text-2xl">
                 ✅
@@ -466,7 +475,7 @@ export default function ProdutoDetalhesPage({ params }: PageProps) {
 
             {/* Resumo da personalização feita */}
             {(removedIngredientIds.length > 0 || addedIngredientIds.length > 0) && (
-              <div className="mt-4 rounded-xl bg-branco-suave p-3 text-xs text-cinza">
+              <div className="mt-4 rounded-xl bg-branco-suave p-3 text-sm text-cinza">
                 {removedIngredientIds.length > 0 && (
                   <p>
                     <strong className="text-marrom">Sem: </strong>
@@ -505,13 +514,13 @@ export default function ProdutoDetalhesPage({ params }: PageProps) {
               </button>
               <Link
                 href="/carrinho"
-                className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full bg-laranja-escuro px-4 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-laranja"
+                className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full bg-laranja-escuro px-4 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-marrom"
               >
                 Ir para o carrinho
               </Link>
             </div>
           </div>
-        </div>
+        </dialog>
       )}
     </div>
   );

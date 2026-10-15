@@ -1,17 +1,19 @@
-# projeto-lanches
-Repositório da Avaliação 2 - Projeto de Desenvolvimento Web de Programação para Interface de Usuário
+# Aplicativo — projeto-lanches
+Repositório da Avaliação 2 - Projeto de Desenvolvimento Web de Programação para Interface de Usuário.
 
 ## Sobre o projeto
 
-Aplicação web acadêmica para explorar o cardápio de uma lanchonete. Os produtos e as contas iniciais são dados locais de demonstração, não um banco de dados de produção.
+Aplicação web acadêmica para explorar o cardápio de uma lanchonete, personalizar produtos, realizar pedidos e acompanhar seu andamento. Os dados são locais/de demonstração; não há banco de dados de produção.
 
 ### Funcionalidades
 
 - Login e cadastro demonstrativos.
 - Listagem de produtos com busca por texto e filtro por categoria.
-- Exibição de mensagens de carregamento e erro ao buscar os produtos.
-
-As páginas de detalhes do produto, carrinho, checkout e acompanhamento do pedido existem, mas ainda estão em construção.
+- Detalhes de produto com seleção de ingredientes e quantidade.
+- Carrinho com edição de quantidades, remoção de itens e subtotal.
+- Checkout com validação dos campos e criação idempotente do pedido.
+- Acompanhamento do pedido, atualização periódica do status e cancelamento nas etapas permitidas.
+- Estados de carregamento, erro e dados não encontrados nas telas que consultam a API.
 
 ### Páginas
 
@@ -20,10 +22,28 @@ As páginas de detalhes do produto, carrinho, checkout e acompanhamento do pedid
 | `/` | Redireciona para o cardápio se houver sessão; caso contrário, abre o login. |
 | `/login` | Login e cadastro demonstrativos. |
 | `/cardapio` | Lista, busca e filtros de produtos. |
-| `/produto/[id]` | Detalhes do produto (em construção). |
-| `/carrinho` | Carrinho (em construção). |
-| `/checkout` | Checkout (em construção). |
-| `/pedido/[id]` | Acompanhamento do pedido (em construção). |
+| `/produto/[id]` | Detalhes, personalização e adição ao carrinho. |
+| `/carrinho` | Itens, quantidades e subtotal. |
+| `/checkout` | Formulário e confirmação do pedido. |
+| `/pedidos` | Lista os pedidos do usuário e permite abrir o acompanhamento de cada um. |
+| `/pedido/[id]` | Status, itens, endereço, pagamento e cancelamento. |
+
+### API
+
+| Método | Endpoint | Uso |
+| --- | --- | --- |
+| `POST` | `/api/auth/login` | Login demonstrativo. |
+| `POST` | `/api/auth/register` | Cadastro demonstrativo. |
+| `GET` | `/api/products` | Lista produtos; aceita busca e filtros. |
+| `GET` | `/api/products/[id]` | Consulta um produto. |
+| `POST` | `/api/orders` | Cria um pedido (`X-User-Id`; aceita `Idempotency-Key`). |
+| `GET` | `/api/orders` | Lista os pedidos do usuário autenticado pelo cabeçalho `X-User-Id`. |
+| `GET` | `/api/orders/[id]` | Consulta o pedido do usuário (`X-User-Id`). |
+| `PATCH` | `/api/orders/[id]` | Atualiza status; a interface usa para cancelar o pedido. |
+| `GET` | `/api/shipping` | Ainda não implementado (responde `501`). |
+| `DELETE` | `/api/orders/[id]` | Ainda não implementado (responde `501`). |
+
+No modo de demonstração, o status avança automaticamente a cada 15 segundos após a criação do pedido, até ser entregue. O pedido pode ser cancelado enquanto estiver como recebido ou em preparação. A opção **Meus pedidos** no cardápio lista os pedidos disponíveis para a sessão atual.
 
 ### Estrutura do código
 
@@ -41,6 +61,20 @@ As páginas de detalhes do produto, carrinho, checkout e acompanhamento do pedid
 ### Tecnologias
 
 Next.js, React, TypeScript e Tailwind CSS.
+
+### Equipe
+
+Os três integrantes abaixo aparecem no histórico de commits do repositório. O histórico também registra dois merges de pull requests:
+
+| Integrante (nome exibido no Git) | Contribuições registradas |
+| --- | --- |
+| Libia Manoela (`libiamanoela`) | Estrutura inicial, autenticação, cardápio e imagens dos produtos. |
+| Bernardo ('Bernildo42') | Detalhes de produto e carrinho. |
+| Pedro Emilio Martinelli ('PedroEmilioMartinelli') | API e acompanhamento de pedidos, checkout. |
+
+### Publicação
+
+URL de produção na Vercel: ainda não informada neste repositório.
 
 ## Comandos úteis
 
@@ -61,7 +95,8 @@ O projeto ainda não possui um comando de testes automatizados configurado no `p
 ## Diagnóstico rápido
 
 - **O aplicativo não abre:** confirme no terminal se o servidor está pronto e acesse o endereço e a porta informados por ele.
-- **O login é recusado:** use uma das contas listadas em [Acesso de demonstração](#acesso-de-demonstração). O cadastro local também é apagado quando o servidor reinicia.
+- **O login é recusado:** use uma das contas listadas em [Acesso de demonstração](#acesso-de-demonstração). Contas cadastradas localmente também são apagadas quando o servidor reinicia.
+- **O pedido não é encontrado depois de uma publicação:** os pedidos e contas cadastradas ficam em memória no servidor. Em ambientes serverless, como a Vercel, diferentes instâncias podem não compartilhar esse estado; a aplicação ainda precisa de armazenamento persistente para uso confiável em produção.
 - **O cardápio não carrega:** verifique erros no terminal onde `npm run dev` está executando. A rota `http://localhost:3000/api/products` deve retornar os produtos em JSON quando o servidor estiver usando a porta `3000`.
 - **Trocar uma foto:** substitua o arquivo correspondente em `public/images/products/`, mantendo o mesmo nome. No modo de desenvolvimento as imagens não passam pelo otimizador do Next.js, então uma atualização da página deve mostrar o arquivo novo. Para produção, execute um novo build e publique os arquivos atualizados.
 - **Testar o estado de erro:** abra `/cardapio?simular=erro` para simular uma falha da API de produtos.

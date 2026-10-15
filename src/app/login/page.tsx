@@ -47,8 +47,8 @@ export default function LoginPage() {
 
 	return (
 		<div className="grid min-h-[calc(100svh-1px)] bg-amarelo-claro lg:grid-cols-[minmax(0,1fr)_minmax(420px,0.9fr)]">
-			<section className="relative hidden min-h-screen overflow-hidden bg-laranja p-12 text-marrom lg:flex lg:flex-col lg:justify-between">
-				<a href="/cardapio" className="font-poppins text-3xl font-bold">Aplicativo</a>
+			<section className="relative hidden min-h-screen overflow-hidden bg-laranja-escuro p-12 text-white lg:flex lg:flex-col lg:justify-between">
+				<a href="/cardapio" className="font-poppins text-3xl font-bold text-white">Aplicativo</a>
 				<div className="relative z-10 max-w-lg pb-10">
 					<p className="text-sm font-semibold uppercase">Bons lanches, sem complicação</p>
 					<h1 className="mt-3 text-5xl font-bold leading-tight">Seu próximo lanche favorito está aqui.</h1>
@@ -59,8 +59,8 @@ export default function LoginPage() {
 
 			<section className="flex min-h-screen items-center justify-center px-5 py-10 sm:px-10">
 				<div className="w-full max-w-md">
-					<a href="/cardapio" className="font-poppins text-2xl font-bold text-laranja-escuro lg:hidden">Aplicativo</a>
-					<p className="mt-8 text-sm font-semibold text-laranja-escuro">BEM-VINDO À Aplicativo</p>
+					<a href="/cardapio" className="font-poppins text-2xl font-bold text-marrom lg:hidden">Aplicativo</a>
+					<p className="mt-8 text-sm font-semibold text-marrom">BEM-VINDO À Aplicativo</p>
 					<h1 className="mt-2 text-[28px] font-bold">
 						{mode === "login" ? "Entre na sua conta" : "Crie sua conta"}
 					</h1>
@@ -69,10 +69,10 @@ export default function LoginPage() {
 					</p>
 
 					<div className="mt-7 grid grid-cols-2 border-b border-laranja-claro" role="group" aria-label="Acesso à conta">
-						<button type="button" aria-pressed={mode === "login"} onClick={() => switchMode("login")} className={`min-h-11 border-b-2 font-medium ${mode === "login" ? "border-laranja-escuro text-laranja-escuro" : "border-transparent text-cinza"}`}>
+						<button type="button" aria-pressed={mode === "login"} onClick={() => switchMode("login")} className={`min-h-11 border-b-2 font-medium ${mode === "login" ? "border-marrom text-marrom" : "border-transparent text-cinza"}`}>
 							Entrar
 						</button>
-						<button type="button" aria-pressed={mode === "register"} onClick={() => switchMode("register")} className={`min-h-11 border-b-2 font-medium ${mode === "register" ? "border-laranja-escuro text-laranja-escuro" : "border-transparent text-cinza"}`}>
+						<button type="button" aria-pressed={mode === "register"} onClick={() => switchMode("register")} className={`min-h-11 border-b-2 font-medium ${mode === "register" ? "border-marrom text-marrom" : "border-transparent text-cinza"}`}>
 							Criar conta
 						</button>
 					</div>

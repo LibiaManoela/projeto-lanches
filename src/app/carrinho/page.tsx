@@ -26,7 +26,7 @@ export default function CarrinhoPage() {
           <button
             type="button"
             onClick={clearCart}
-            className="min-h-11 rounded-full px-4 text-sm font-medium text-coral underline-offset-4 hover:underline"
+            className="min-h-11 rounded-full px-4 text-sm font-medium text-marrom underline-offset-4 hover:underline"
           >
             Limpar carrinho
           </button>
@@ -46,7 +46,7 @@ export default function CarrinhoPage() {
           <div className="mt-6">
             <Link
               href="/cardapio"
-              className="inline-flex min-h-11 items-center justify-center rounded-full bg-laranja-escuro px-6 text-[15px] font-medium text-white shadow-sm transition-colors hover:bg-laranja"
+              className="inline-flex min-h-11 items-center justify-center rounded-full bg-laranja-escuro px-6 text-[15px] font-medium text-white shadow-sm transition-colors hover:bg-marrom"
             >
               Ver cardápio
             </Link>
@@ -64,21 +64,21 @@ export default function CarrinhoPage() {
                   className="flex flex-col justify-between gap-4 rounded-2xl bg-white p-5 shadow-sm ring-1 ring-laranja-claro sm:flex-row sm:items-center"
                 >
                   <div className="flex-1">
-                    <h3 className="font-poppins text-lg font-bold text-marrom">
+                    <h2 className="font-poppins text-lg font-bold text-marrom">
                       <Link
                         href={`/produto/${item.productId}`}
                         className="hover:text-laranja-escuro hover:underline"
                       >
                         {item.name}
                       </Link>
-                    </h3>
+                    </h2>
 
                     {/* Exibição de personalizações */}
                     {(item.removedIngredients.length > 0 || item.addedIngredients.length > 0) && (
-                      <div className="mt-1 space-y-0.5 text-xs text-cinza">
+                      <div className="mt-1 space-y-0.5 text-sm text-cinza">
                         {item.removedIngredients.length > 0 && (
                           <p>
-                            <span className="font-medium text-coral">Sem: </span>
+                            <span className="font-medium text-marrom">Sem: </span>
                             {item.removedIngredients.join(", ")}
                           </p>
                         )}
@@ -128,7 +128,7 @@ export default function CarrinhoPage() {
                         type="button"
                         onClick={() => removeItem(index)}
                         aria-label={`Remover ${item.name} do carrinho`}
-                        className="mt-1 text-xs text-coral hover:underline"
+                        className="mt-1 text-sm text-marrom hover:underline"
                       >
                         Remover
                       </button>
@@ -161,7 +161,7 @@ export default function CarrinhoPage() {
             <div className="mt-6 space-y-3">
               <Link
                 href="/checkout"
-                className="flex min-h-12 w-full items-center justify-center rounded-full bg-laranja-escuro px-4 text-[15px] font-bold text-white shadow-md transition-colors hover:bg-laranja"
+                className="flex min-h-12 w-full items-center justify-center rounded-full bg-laranja-escuro px-4 text-[15px] font-bold text-white shadow-md transition-colors hover:bg-marrom"
               >
                 Continuar para Checkout
               </Link>

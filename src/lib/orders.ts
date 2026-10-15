@@ -26,7 +26,7 @@ export const ORDER_STATUS: Record<OrderStatus, { label: string; description: str
   cancelado: {
     label: "Cancelado",
     description: "Este pedido foi cancelado.",
-    badge: "bg-coral text-marrom",
+    badge: "bg-laranja-claro text-marrom",
   },
 };
 
