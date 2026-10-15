@@ -10,7 +10,7 @@ import { PAYMENT_METHODS } from "@/lib/payment-methods";
 import type { CheckoutFields, PaymentMethod } from "@/lib/types";
 import { formatCep, formatPhone, LIMITS, validateCheckout } from "@/lib/validators";
 import { ApiError } from "@/services/api";
-import { getSession, type SessionUser } from "@/services/auth";
+import { clearSession, getSession, type SessionUser } from "@/services/auth";
 import { createOrder } from "@/services/orders";
 import { useCart } from "@/store/carrinho";
 
@@ -185,6 +185,9 @@ export default function CheckoutPage() {
       clearCart();
       router.replace(`/pedido/${order.id}?confirmado=1`);
     } catch (error) {
+      // O servidor não reconhece mais este usuário (ex.: foi reiniciado e a conta de teste sumiu).
+      // Limpa a sessão local para que a tela de login não redirecione de volta ao cardápio.
+      if (error instanceof ApiError && error.status === 401) clearSession();
       setFormError(error instanceof ApiError ? error.message : "Não foi possível finalizar o pedido. Tente novamente.");
       setFormErrorCode(error instanceof ApiError ? error.status : 0);
     } finally {

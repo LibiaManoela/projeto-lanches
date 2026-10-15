@@ -16,7 +16,7 @@ import { paymentMethodById } from "@/lib/payment-methods";
 import type { Order } from "@/lib/types";
 import { formatPhone } from "@/lib/validators";
 import { ApiError } from "@/services/api";
-import { getSession, type SessionUser } from "@/services/auth";
+import { clearSession, getSession, type SessionUser } from "@/services/auth";
 import { getOrder } from "@/services/orders";
 
 type Status = "loading" | "ok" | "error";
@@ -66,6 +66,8 @@ export default function PedidoPage() {
           // Já temos um pedido na tela: mantém os dados e só avisa que não atualizou.
           setRefreshFailed(true);
         } else {
+          // Sessão não reconhecida pelo servidor: limpa para o login não voltar ao cardápio.
+          if (error instanceof ApiError && error.status === 401) clearSession();
           setErrorMessage(error instanceof ApiError ? error.message : "Erro inesperado. Tente novamente.");
           setErrorCode(error instanceof ApiError ? error.status : 0);
           setStatus("error");
