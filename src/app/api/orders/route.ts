@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import products from "@/mocks/products.json";
-import { addOrder, findOrderByKey, getRequestUserId } from "@/lib/mock-orders";
+import { addOrder, advanceDemoOrderStatus, findOrderByKey, findOrdersByUserId, getRequestUserId } from "@/lib/mock-orders";
 import { cartTotal } from "@/lib/orders";
 import type { CartItem, CheckoutFields, PaymentMethod, Product } from "@/lib/types";
 import { formatCep, normalizePhone, validateCheckout } from "@/lib/validators";
@@ -72,6 +72,20 @@ function buildItems(raw: unknown): { items: CartItem[] } | { error: string } {
 }
 
 // POST /api/orders  (cabeçalhos: X-User-Id e, opcional, Idempotency-Key)
+export async function GET(request: Request) {
+	const userId = getRequestUserId(request);
+	if (userId === null) {
+		return NextResponse.json({ message: "Sessão inválida. Entre novamente." }, { status: 401 });
+	}
+
+	const orders = findOrdersByUserId(userId);
+	for (const order of orders) advanceDemoOrderStatus(order);
+
+	return NextResponse.json(
+		orders.map(({ id, createdAt, status, items, total }) => ({ id, createdAt, status, items, total })),
+	);
+}
+
 export async function POST(request: Request) {
 	const userId = getRequestUserId(request);
 	if (userId === null) {

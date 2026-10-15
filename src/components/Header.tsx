@@ -59,6 +59,17 @@ export default function Header({ showBackToCardapio = false }: HeaderProps) {
           </Link>
         )}
 
+        {user && (
+          <Link
+            href="/pedidos"
+            className="relative inline-flex min-h-11 min-w-11 items-center justify-center rounded-full bg-white px-3.5 py-2 text-sm font-medium text-marrom ring-1 ring-laranja-claro transition-colors hover:bg-amarelo-claro"
+            aria-label="Meus pedidos"
+          >
+            <span aria-hidden="true" className="mr-1.5 text-base">🧾</span>
+            <span className="font-semibold text-laranja-escuro">Meus pedidos</span>
+          </Link>
+        )}
+
         {/* Link do carrinho com contador acessível */}
         <Link
           href="/carrinho"
@@ -69,7 +80,7 @@ export default function Header({ showBackToCardapio = false }: HeaderProps) {
           <span className="font-semibold text-laranja-escuro">Carrinho</span>
           {totalCount > 0 && (
             <span
-              className="ml-2 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-laranja-escuro px-1.5 text-xs font-bold text-white"
+              className="ml-2 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-laranja-escuro px-1.5 text-sm font-bold text-white"
               aria-hidden="true"
             >
               {totalCount}

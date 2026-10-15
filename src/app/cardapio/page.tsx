@@ -1,14 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import Header from "@/components/Header";
-// import Link from "next/link";
 import ProductCard from "@/components/ProductCard";
 import { CATEGORIES } from "@/lib/categories";
 import type { Product } from "@/lib/types";
 import { ApiError } from "@/services/api";
-import { clearSession, getSession, type SessionUser } from "@/services/auth";
 import { getProducts } from "@/services/products";
 
 type Status = "loading" | "ok" | "error";
@@ -16,23 +13,12 @@ type Status = "loading" | "ok" | "error";
 const FILTERS = [{ id: "", label: "Todos" }, ...CATEGORIES];
 
 export default function CardapioPage() {
-  const router = useRouter();
-  const [user, setUser] = useState<SessionUser | null>(null);
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("");
   const [products, setProducts] = useState<Product[]>([]);
   const [status, setStatus] = useState<Status>("loading");
   const [errorMessage, setErrorMessage] = useState("");
   const [attempt, setAttempt] = useState(0);
-
-  useEffect(() => {
-    setUser(getSession());
-  }, []);
-
-  function signOut() {
-    clearSession();
-    router.replace("/login");
-  }
 
   // Busca os produtos sempre que filtro, texto ou "tentar novamente" mudar.
   useEffect(() => {
